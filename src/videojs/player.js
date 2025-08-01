@@ -93,3 +93,52 @@ export function sampleVideoJSHLS() {
     document.getElementById('videojs-url').value = SAMPLE_URLS.hls;
     loadVideoJS();
 }
+
+// ピクチャーインピクチャー機能
+export function togglePiP() {
+    if (!videojsPlayer) {
+        alert('Video.jsプレイヤーが初期化されていません');
+        return;
+    }
+
+    const videoElement = videojsPlayer.el().querySelector('video');
+
+    if (!videoElement) {
+        alert('ビデオ要素が見つかりません');
+        return;
+    }
+
+    // Picture-in-Picture APIの対応確認
+    if (!document.pictureInPictureEnabled) {
+        alert('このブラウザはピクチャーインピクチャーに対応していません');
+        return;
+    }
+
+    if (videoElement.readyState === 0) {
+        alert('動画を読み込んでからピクチャーインピクチャーを使用してください');
+        return;
+    }
+
+    // 現在PiPモードかどうかを確認
+    if (document.pictureInPictureElement) {
+        // PiPモードを終了
+        document.exitPictureInPicture()
+            .then(() => {
+                console.log('ピクチャーインピクチャーを終了しました');
+            })
+            .catch((error) => {
+                console.error('PiP終了エラー:', error);
+                alert('ピクチャーインピクチャーの終了に失敗しました');
+            });
+    } else {
+        // PiPモードを開始
+        videoElement.requestPictureInPicture()
+            .then(() => {
+                console.log('ピクチャーインピクチャーを開始しました');
+            })
+            .catch((error) => {
+                console.error('PiP開始エラー:', error);
+                alert('ピクチャーインピクチャーの開始に失敗しました');
+            });
+    }
+}

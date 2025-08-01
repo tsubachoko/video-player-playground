@@ -1,4 +1,4 @@
-import { initVideoJS, loadVideoJS, sampleVideoJS, sampleVideoJSHLS } from './videojs/player.js';
+import { initVideoJS, loadVideoJS, sampleVideoJS, sampleVideoJSHLS, togglePiP } from './videojs/player.js';
 import { initHLSJS, loadHLSJS, sampleHLSJS } from './hlsjs/player.js';
 import { initShaka, loadShaka, sampleShaka, sampleShakaHLS } from './shaka/player.js';
 
@@ -6,6 +6,7 @@ import { initShaka, loadShaka, sampleShaka, sampleShakaHLS } from './shaka/playe
 window.loadVideoJS = loadVideoJS;
 window.sampleVideoJS = sampleVideoJS;
 window.sampleVideoJSHLS = sampleVideoJSHLS;
+window.togglePiP = togglePiP;
 
 window.loadHLSJS = loadHLSJS;
 window.sampleHLSJS = sampleHLSJS;
