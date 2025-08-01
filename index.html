@@ -113,6 +113,51 @@
         .tab-content.active {
             display: block;
         }
+
+        /* サブタブナビゲーション */
+        .sub-tab-navigation {
+            display: flex;
+            background: #f8f9fa;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            border: 1px solid #e0e0e0;
+        }
+
+        .sub-tab-button {
+            flex: 1;
+            padding: 12px 16px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+            color: #666;
+            transition: all 0.3s ease;
+            border-right: 1px solid #e0e0e0;
+        }
+
+        .sub-tab-button:last-child {
+            border-right: none;
+        }
+
+        .sub-tab-button:hover {
+            background: #e9ecef;
+            color: #333;
+        }
+
+        .sub-tab-button.active {
+            background: #007bff;
+            color: white;
+        }
+
+        .sub-tab-content {
+            display: none;
+        }
+
+        .sub-tab-content.active {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -137,30 +182,51 @@
             <div class="player-section">
                 <h2>Video.js</h2>
                 <div class="info">
-                    <p><strong>Video.js</strong> - HTML5ビデオプレイヤーのスタンダード。豊富なプラグインエコシステムとカスタマイズ性が特徴。HTTP Streamingプラグインを使用してHLS/DASHにも対応。ピクチャーインピクチャー機能付き。</p>
+                    <p><strong>Video.js</strong> - HTML5ビデオプレイヤーのスタンダード。豊富なプラグインエコシステムとカスタマイズ性が特徴。HTTP Streamingプラグインを使用してHLS/DASHにも対応。</p>
                 </div>
-                <video
-                    id="videojs-player"
-                    class="video-js vjs-default-skin"
-                    controls
-                    preload="auto"
-                    width="800"
-                    height="450"
-                    data-setup="{}">
-                    <p class="vjs-no-js">
-                        JavaScript を有効にしてください。
-                        <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
-                    </p>
-                </video>
-                <div class="controls">
-                    <input type="text" id="videojs-url" class="url-input" placeholder="ビデオURLを入力してください">
-                    <button onclick="loadVideoJS()">ロード</button>
-                    <button onclick="sampleVideoJS()">サンプル動画</button>
-                    <button onclick="sampleVideoJSHLS()">サンプルHLS</button>
-                    <button onclick="togglePiP()">ピクチャーインピクチャー</button>
+
+                <!-- Video.js サブタブナビゲーション -->
+                <div class="sub-tab-navigation">
+                    <button class="sub-tab-button active" onclick="switchSubTab('videojs', 'standard')">
+                        🎯 標準UI
+                    </button>
+                    <button class="sub-tab-button" onclick="switchSubTab('videojs', 'custom')">
+                        🎨 カスタムUI
+                    </button>
                 </div>
-                <div id="videojs-info" class="info" style="display: none;">
-                    <p>Video.js HLS情報: <span id="videojs-hls-info"></span></p>
+
+                <!-- Video.js 標準UI -->
+                <div id="videojs-standard" class="sub-tab-content active">
+                    <video
+                        id="videojs-player"
+                        class="video-js vjs-default-skin"
+                        controls
+                        preload="auto"
+                        width="800"
+                        height="450"
+                        data-setup="{}">
+                        <p class="vjs-no-js">
+                            JavaScript を有効にしてください。
+                            <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+                        </p>
+                    </video>
+                    <div class="controls">
+                        <input type="text" id="videojs-url" class="url-input" placeholder="ビデオURLを入力してください">
+                        <button onclick="loadVideoJS()">ロード</button>
+                        <button onclick="sampleVideoJS()">サンプル動画</button>
+                        <button onclick="sampleVideoJSHLS()">サンプルHLS</button>
+                        <button onclick="togglePiP()">ピクチャーインピクチャー</button>
+                    </div>
+                    <div id="videojs-info" class="info" style="display: none;">
+                        <p>Video.js HLS情報: <span id="videojs-hls-info"></span></p>
+                    </div>
+                </div>
+
+                <!-- Video.js カスタムUI -->
+                <div id="videojs-custom" class="sub-tab-content">
+                    <div class="info">
+                        <p>🚧 <strong>カスタムUI実装予定</strong> - Video.jsのカスタムコンポーネントを使用した独自UIをここに実装します。</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -174,15 +240,36 @@
                 <div class="info">
                     <p><strong>HLS.js</strong> - HTTP Live Streaming (HLS) 対応のJavaScriptライブラリ。アダプティブストリーミングをサポート。</p>
                 </div>
-                <video id="hlsjs-player" controls width="800" height="450"></video>
-                <div class="controls">
-                    <input type="text" id="hlsjs-url" class="url-input" placeholder="HLS URLを入力してください (m3u8)">
-                    <button onclick="loadHLSJS()">ロード</button>
-                    <button onclick="sampleHLSJS()">サンプルHLS</button>
+
+                <!-- HLS.js サブタブナビゲーション -->
+                <div class="sub-tab-navigation">
+                    <button class="sub-tab-button active" onclick="switchSubTab('hlsjs', 'standard')">
+                        🎯 標準UI
+                    </button>
+                    <button class="sub-tab-button" onclick="switchSubTab('hlsjs', 'custom')">
+                        🎨 カスタムUI
+                    </button>
                 </div>
-                <div id="hlsjs-info" class="info" style="display: none;">
-                    <p>品質レベル: <span id="hlsjs-levels"></span></p>
-                    <p>現在の品質: <span id="hlsjs-current-level"></span></p>
+
+                <!-- HLS.js 標準UI -->
+                <div id="hlsjs-standard" class="sub-tab-content active">
+                    <video id="hlsjs-player" controls width="800" height="450"></video>
+                    <div class="controls">
+                        <input type="text" id="hlsjs-url" class="url-input" placeholder="HLS URLを入力してください (m3u8)">
+                        <button onclick="loadHLSJS()">ロード</button>
+                        <button onclick="sampleHLSJS()">サンプルHLS</button>
+                    </div>
+                    <div id="hlsjs-info" class="info" style="display: none;">
+                        <p>品質レベル: <span id="hlsjs-levels"></span></p>
+                        <p>現在の品質: <span id="hlsjs-current-level"></span></p>
+                    </div>
+                </div>
+
+                <!-- HLS.js カスタムUI -->
+                <div id="hlsjs-custom" class="sub-tab-content">
+                    <div class="info">
+                        <p>🚧 <strong>カスタムUI実装予定</strong> - HLS.jsと独自のコントロールUIを組み合わせたプレイヤーをここに実装します。</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -196,16 +283,37 @@
                 <div class="info">
                     <p><strong>Shaka Player</strong> - Googleが開発したアダプティブストリーミングプレイヤー。DASH、HLS対応で高機能。</p>
                 </div>
-                <video id="shaka-player" controls width="800" height="450"></video>
-                <div class="controls">
-                    <input type="text" id="shaka-url" class="url-input" placeholder="DASH/HLS URLを入力してください">
-                    <button onclick="loadShaka()">ロード</button>
-                    <button onclick="sampleShaka()">サンプルDASH</button>
-                    <button onclick="sampleShakaHLS()">サンプルHLS</button>
+
+                <!-- Shaka Player サブタブナビゲーション -->
+                <div class="sub-tab-navigation">
+                    <button class="sub-tab-button active" onclick="switchSubTab('shaka', 'standard')">
+                        🎯 標準UI
+                    </button>
+                    <button class="sub-tab-button" onclick="switchSubTab('shaka', 'custom')">
+                        🎨 カスタムUI
+                    </button>
                 </div>
-                <div id="shaka-info" class="info" style="display: none;">
-                    <p>利用可能な品質: <span id="shaka-variants"></span></p>
-                    <p>現在の品質: <span id="shaka-current-variant"></span></p>
+
+                <!-- Shaka Player 標準UI -->
+                <div id="shaka-standard" class="sub-tab-content active">
+                    <video id="shaka-player" controls width="800" height="450"></video>
+                    <div class="controls">
+                        <input type="text" id="shaka-url" class="url-input" placeholder="DASH/HLS URLを入力してください">
+                        <button onclick="loadShaka()">ロード</button>
+                        <button onclick="sampleShaka()">サンプルDASH</button>
+                        <button onclick="sampleShakaHLS()">サンプルHLS</button>
+                    </div>
+                    <div id="shaka-info" class="info" style="display: none;">
+                        <p>利用可能な品質: <span id="shaka-variants"></span></p>
+                        <p>現在の品質: <span id="shaka-current-variant"></span></p>
+                    </div>
+                </div>
+
+                <!-- Shaka Player カスタムUI -->
+                <div id="shaka-custom" class="sub-tab-content">
+                    <div class="info">
+                        <p>🚧 <strong>カスタムUI実装予定</strong> - Shaka PlayerのUIライブラリを使用した独自UIをここに実装します。</p>
+                    </div>
                 </div>
             </div>
         </div>

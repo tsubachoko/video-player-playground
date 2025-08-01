@@ -21,7 +21,24 @@ window.switchTab = (tabName) => {
     document.getElementById(`${tabName}-tab`).classList.add('active');
 };
 
-// グローバル関数として公開
+// サブタブ切り替え機能
+window.switchSubTab = (playerName, subTabName) => {
+    // 該当プレイヤーのサブタブボタンからactiveクラスを削除
+    document.querySelectorAll(`#${playerName}-tab .sub-tab-button`).forEach(button => {
+        button.classList.remove('active');
+    });
+
+    // 該当プレイヤーのサブタブコンテンツを非表示
+    document.querySelectorAll(`#${playerName}-tab .sub-tab-content`).forEach(content => {
+        content.classList.remove('active');
+    });
+
+    // 選択されたサブタブボタンにactiveクラスを追加
+    event.target.classList.add('active');
+
+    // 選択されたサブタブコンテンツを表示
+    document.getElementById(`${playerName}-${subTabName}`).classList.add('active');
+};// グローバル関数として公開
 window.loadVideoJS = loadVideoJS;
 window.sampleVideoJS = sampleVideoJS;
 window.sampleVideoJSHLS = sampleVideoJSHLS;
