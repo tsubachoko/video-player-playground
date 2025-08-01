@@ -75,3 +75,9 @@ export function sampleShaka() {
     document.getElementById('shaka-url').value = SAMPLE_URLS.dash;
     loadShaka();
 }
+
+// サンプルHLSをロード
+export function sampleShakaHLS() {
+    document.getElementById('shaka-url').value = SAMPLE_URLS.hls;
+    loadShaka();
+}

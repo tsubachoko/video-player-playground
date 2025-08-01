@@ -1,6 +1,6 @@
 import { initVideoJS, loadVideoJS, sampleVideoJS, sampleVideoJSHLS } from './videojs/player.js';
 import { initHLSJS, loadHLSJS, sampleHLSJS } from './hlsjs/player.js';
-import { initShaka, loadShaka, sampleShaka } from './shaka/player.js';
+import { initShaka, loadShaka, sampleShaka, sampleShakaHLS } from './shaka/player.js';
 
 // グローバル関数として公開
 window.loadVideoJS = loadVideoJS;
@@ -12,6 +12,7 @@ window.sampleHLSJS = sampleHLSJS;
 
 window.loadShaka = loadShaka;
 window.sampleShaka = sampleShaka;
+window.sampleShakaHLS = sampleShakaHLS;
 
 // 初期化
 document.addEventListener('DOMContentLoaded', () => {
