@@ -1,6 +1,12 @@
-import { initVideoJS, loadVideoJS, sampleVideoJS, sampleVideoJSHLS, togglePiP } from './videojs/player.js';
-import { initHLSJS, loadHLSJS, sampleHLSJS } from './hlsjs/player.js';
-import { initShaka, loadShaka, sampleShaka, sampleShakaHLS } from './shaka/player.js';
+import { initVideoJS, loadVideoJS, sampleVideoJS, sampleVideoJSHLS, togglePiP,
+         loadVideoJSCustom, togglePlayVideoJSCustom, toggleMuteVideoJSCustom,
+         setVolumeVideoJSCustom, setSpeedVideoJSCustom, seekVideoJSCustom, loadSampleVideoJSCustom } from './videojs/player.js';
+import { initHLSJS, loadHLSJS, sampleHLSJS,
+         loadHLSJSCustom, togglePlayHLSJSCustom, toggleMuteHLSJSCustom,
+         setVolumeHLSJSCustom, setSpeedHLSJSCustom, seekHLSJSCustom, loadSampleHLSJSCustom } from './hlsjs/player.js';
+import { initShaka, loadShaka, sampleShaka, sampleShakaHLS,
+         loadShakaCustom, togglePlayShakaCustom, toggleMuteShakaCustom,
+         setVolumeShakaCustom, setSpeedShakaCustom, seekShakaCustom, loadSampleShakaCustom } from './shaka/player.js';
 
 // タブ切り替え機能
 window.switchTab = (tabName) => {
@@ -56,4 +62,122 @@ document.addEventListener('DOMContentLoaded', () => {
     initVideoJS();
     initHLSJS();
     initShaka();
+    initCustomPlayers();
 });
+
+// カスタムプレイヤーの初期化（オーバーレイ機能のみ）
+function initCustomPlayers() {
+    // オーバーレイの自動非表示機能を追加
+    ['videojs', 'hlsjs', 'shaka'].forEach(playerType => {
+        const container = document.getElementById(`${playerType}-custom-container`);
+        const overlay = document.getElementById(`${playerType}-overlay`);
+        let hideTimer;
+
+        if (container && overlay) {
+            // マウス移動時にオーバーレイを表示
+            container.addEventListener('mousemove', () => {
+                overlay.classList.add('visible');
+                clearTimeout(hideTimer);
+                hideTimer = setTimeout(() => {
+                    overlay.classList.remove('visible');
+                }, 3000); // 3秒後に非表示
+            });
+
+            // マウスがコンテナから離れたら即座に非表示
+            container.addEventListener('mouseleave', () => {
+                overlay.classList.remove('visible');
+                clearTimeout(hideTimer);
+            });
+
+            // オーバーレイ自体にマウスが乗った時は非表示タイマーをクリア
+            overlay.addEventListener('mouseenter', () => {
+                clearTimeout(hideTimer);
+            });
+        }
+    });
+}
+
+// カスタムプレイヤーの共通ロード関数
+window.loadCustomPlayer = async function(playerType) {
+    const urlInput = document.getElementById(`${playerType}-custom-url`);
+    const url = urlInput.value.trim();
+
+    if (!url) {
+        alert('URLを入力してください');
+        return;
+    }
+
+    try {
+        if (playerType === 'videojs') {
+            await loadVideoJSCustom(url);
+        } else if (playerType === 'hlsjs') {
+            await loadHLSJSCustom(url);
+        } else if (playerType === 'shaka') {
+            await loadShakaCustom(url);
+        }
+    } catch (error) {
+        console.error(`Error loading ${playerType}:`, error);
+        alert(`エラーが発生しました: ${error.message}`);
+    }
+};
+
+// カスタムプレイヤーの各機能を個別のライブラリ関数に委譲
+window.togglePlayCustom = function(playerType) {
+    if (playerType === 'videojs') {
+        togglePlayVideoJSCustom();
+    } else if (playerType === 'hlsjs') {
+        togglePlayHLSJSCustom();
+    } else if (playerType === 'shaka') {
+        togglePlayShakaCustom();
+    }
+};
+
+window.toggleMuteCustom = function(playerType) {
+    if (playerType === 'videojs') {
+        toggleMuteVideoJSCustom();
+    } else if (playerType === 'hlsjs') {
+        toggleMuteHLSJSCustom();
+    } else if (playerType === 'shaka') {
+        toggleMuteShakaCustom();
+    }
+};
+
+window.setVolumeCustom = function(playerType, volume) {
+    if (playerType === 'videojs') {
+        setVolumeVideoJSCustom(volume);
+    } else if (playerType === 'hlsjs') {
+        setVolumeHLSJSCustom(volume);
+    } else if (playerType === 'shaka') {
+        setVolumeShakaCustom(volume);
+    }
+};
+
+window.setSpeedCustom = function(playerType, speed) {
+    if (playerType === 'videojs') {
+        setSpeedVideoJSCustom(speed);
+    } else if (playerType === 'hlsjs') {
+        setSpeedHLSJSCustom(speed);
+    } else if (playerType === 'shaka') {
+        setSpeedShakaCustom(speed);
+    }
+};
+
+window.seekCustomPlayer = function(playerType, seconds) {
+    if (playerType === 'videojs') {
+        seekVideoJSCustom(seconds);
+    } else if (playerType === 'hlsjs') {
+        seekHLSJSCustom(seconds);
+    } else if (playerType === 'shaka') {
+        seekShakaCustom(seconds);
+    }
+};
+
+window.loadSampleCustom = function(playerType, type) {
+    if (playerType === 'videojs') {
+        loadSampleVideoJSCustom(type);
+    } else if (playerType === 'hlsjs') {
+        loadSampleHLSJSCustom(type);
+    } else if (playerType === 'shaka') {
+        loadSampleShakaCustom(type);
+    }
+};

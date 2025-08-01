@@ -142,3 +142,113 @@ export function togglePiP() {
             });
     }
 }
+
+// Video.js カスタムプレイヤーのインスタンス管理
+let customVideoJSPlayer = null;
+
+// Video.js カスタムプレイヤーの初期化
+export async function loadVideoJSCustom(url) {
+    const videoElement = document.getElementById('videojs-custom-player');
+
+    // 既存のプレイヤーがあれば破棄
+    if (customVideoJSPlayer) {
+        customVideoJSPlayer.dispose();
+    }
+
+    // Video.js プレイヤーを初期化（コントロールなし）
+    customVideoJSPlayer = videojs(videoElement, {
+        controls: false,
+        fluid: true,
+        responsive: true,
+        playbackRates: [0.5, 1, 1.5, 2]
+    });
+
+    customVideoJSPlayer.ready(() => {
+        customVideoJSPlayer.src({
+            src: url,
+            type: 'application/x-mpegURL'
+        });
+    });
+}
+
+// Video.js カスタム再生/一時停止の切り替え
+export function togglePlayVideoJSCustom() {
+    const playBtn = document.getElementById('videojs-play-btn');
+    const videoElement = customVideoJSPlayer ? customVideoJSPlayer.el().querySelector('video') : null;
+
+    if (!videoElement) return;
+
+    if (videoElement.paused) {
+        videoElement.play();
+        playBtn.textContent = '⏸️';
+    } else {
+        videoElement.pause();
+        playBtn.textContent = '▶️';
+    }
+}
+
+// Video.js カスタムミュート/ミュート解除の切り替え
+export function toggleMuteVideoJSCustom() {
+    const muteBtn = document.getElementById('videojs-mute-btn');
+    const volumeSlider = document.getElementById('videojs-volume');
+    const videoElement = customVideoJSPlayer ? customVideoJSPlayer.el().querySelector('video') : null;
+
+    if (!videoElement) return;
+
+    if (videoElement.muted) {
+        videoElement.muted = false;
+        muteBtn.textContent = videoElement.volume > 0.5 ? '🔊' : '🔉';
+        volumeSlider.value = videoElement.volume;
+    } else {
+        videoElement.muted = true;
+        muteBtn.textContent = '🔇';
+    }
+}
+
+// Video.js カスタム音量設定
+export function setVolumeVideoJSCustom(volume) {
+    const muteBtn = document.getElementById('videojs-mute-btn');
+    const videoElement = customVideoJSPlayer ? customVideoJSPlayer.el().querySelector('video') : null;
+
+    if (!videoElement) return;
+
+    videoElement.volume = parseFloat(volume);
+    videoElement.muted = false;
+
+    // 音量に応じてアイコンを変更
+    if (volume == 0) {
+        muteBtn.textContent = '🔇';
+    } else if (volume < 0.5) {
+        muteBtn.textContent = '🔉';
+    } else {
+        muteBtn.textContent = '🔊';
+    }
+}
+
+// Video.js カスタム再生速度設定
+export function setSpeedVideoJSCustom(speed) {
+    if (customVideoJSPlayer) {
+        customVideoJSPlayer.playbackRate(parseFloat(speed));
+    }
+}
+
+// Video.js カスタムシーク機能
+export function seekVideoJSCustom(seconds) {
+    if (customVideoJSPlayer) {
+        const currentTime = customVideoJSPlayer.currentTime();
+        customVideoJSPlayer.currentTime(Math.max(0, currentTime + seconds));
+    }
+}
+
+// Video.js カスタムサンプル動画をロード
+export function loadSampleVideoJSCustom(type) {
+    const urlInput = document.getElementById('videojs-custom-url');
+
+    if (type === 'hls') {
+        urlInput.value = SAMPLE_URLS.hls;
+    } else if (type === 'mp4') {
+        urlInput.value = SAMPLE_URLS.mp4;
+    }
+
+    loadVideoJSCustom(urlInput.value);
+}
