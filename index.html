@@ -78,7 +78,7 @@
         <div class="player-section">
             <h2>Video.js</h2>
             <div class="info">
-                <p><strong>Video.js</strong> - HTML5ビデオプレイヤーのスタンダード。豊富なプラグインエコシステムとカスタマイズ性が特徴。</p>
+                <p><strong>Video.js</strong> - HTML5ビデオプレイヤーのスタンダード。豊富なプラグインエコシステムとカスタマイズ性が特徴。HTTP Streamingプラグインを使用してHLS/DASHにも対応。</p>
             </div>
             <video
                 id="videojs-player"
@@ -97,6 +97,10 @@
                 <input type="text" id="videojs-url" class="url-input" placeholder="ビデオURLを入力してください">
                 <button onclick="loadVideoJS()">ロード</button>
                 <button onclick="sampleVideoJS()">サンプル動画</button>
+                <button onclick="sampleVideoJSHLS()">サンプルHLS</button>
+            </div>
+            <div id="videojs-info" class="info" style="display: none;">
+                <p>Video.js HLS情報: <span id="videojs-hls-info"></span></p>
             </div>
         </div>
     </div>
