@@ -1,5 +1,4 @@
 import videojs from 'video.js';
-import '@videojs/http-streaming';
 import { SAMPLE_URLS, getVideoType } from '../common/constants.js';
 
 let videojsPlayer;
