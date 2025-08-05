@@ -167,6 +167,12 @@ export async function loadVideoJSCustom(url) {
             src: url,
             type: 'application/x-mpegURL'
         });
+
+        // 動画終了時のイベントリスナーを追加
+        customVideoJSPlayer.on('ended', () => {
+            console.log('Video.js: 動画が終了しました');
+            console.log('Video.js: Video ended');
+        });
     });
 }
 

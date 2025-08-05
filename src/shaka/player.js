@@ -96,6 +96,12 @@ export async function loadShakaCustom(url) {
 
     customShakaPlayer = new shaka.Player(videoElement);
     await customShakaPlayer.load(url);
+
+    // 動画終了時のイベントリスナーを追加
+    videoElement.addEventListener('ended', () => {
+        console.log('Shaka Player: 動画が終了しました');
+        console.log('Shaka Player: Video ended');
+    });
 }
 
 // Shaka Player カスタム再生/一時停止の切り替え

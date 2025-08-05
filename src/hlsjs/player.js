@@ -98,6 +98,12 @@ export async function loadHLSJSCustom(url) {
     } else {
         throw new Error('HLS is not supported in this browser');
     }
+
+    // 動画終了時のイベントリスナーを追加
+    videoElement.addEventListener('ended', () => {
+        console.log('HLS.js: 動画が終了しました');
+        console.log('HLS.js: Video ended');
+    });
 }
 
 // HLS.js カスタム再生/一時停止の切り替え
