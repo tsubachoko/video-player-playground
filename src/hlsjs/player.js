@@ -87,6 +87,12 @@ export async function loadHLSJSCustom(url) {
         customHLSJSPlayer = new Hls();
         customHLSJSPlayer.loadSource(url);
         customHLSJSPlayer.attachMedia(videoElement);
+
+        customHLSJSPlayer.on(Hls.Events.MANIFEST_PARSED, () => {
+            console.log('HLS.js custom player manifest parsed');
+            console.log('HLS.js levels:', customHLSJSPlayer.levels);
+            videoElement.play();
+        });
     } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
         videoElement.src = url;
     } else {
