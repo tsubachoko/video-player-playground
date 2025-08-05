@@ -204,6 +204,57 @@
             left: 20px;
             right: 20px;
             display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .seek-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .seek-bar {
+            flex: 1;
+            height: 6px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 3px;
+            outline: none;
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .seek-bar::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .seek-bar::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .time-display {
+            color: white;
+            font-size: 12px;
+            min-width: 45px;
+            text-align: center;
+        }
+
+        .controls-row {
+            display: flex;
             align-items: center;
             gap: 15px;
         }
@@ -400,23 +451,33 @@
 
                             <!-- コントロールバー -->
                             <div class="custom-controls">
-                                <button class="control-button play-pause" id="videojs-play-btn" onclick="togglePlayCustom('videojs')">
-                                    ▶️
-                                </button>
-
-                                <div class="volume-container">
-                                    <button class="control-button" id="videojs-mute-btn" onclick="toggleMuteCustom('videojs')">
-                                        🔊
-                                    </button>
-                                    <input type="range" class="volume-slider" id="videojs-volume" min="0" max="1" step="0.1" value="1" onchange="setVolumeCustom('videojs', this.value)">
+                                <!-- シークバー -->
+                                <div class="seek-container">
+                                    <span class="time-display" id="videojs-current-time">0:00</span>
+                                    <input type="range" class="seek-bar" id="videojs-seek" min="0" max="100" value="0" oninput="seekToPosition('videojs', this.value)">
+                                    <span class="time-display" id="videojs-duration">0:00</span>
                                 </div>
 
-                                <select class="speed-selector" id="videojs-speed" onchange="setSpeedCustom('videojs', this.value)">
-                                    <option value="0.5">0.5x</option>
-                                    <option value="1" selected>1.0x</option>
-                                    <option value="1.5">1.5x</option>
-                                    <option value="2">2.0x</option>
-                                </select>
+                                <!-- コントロール行 -->
+                                <div class="controls-row">
+                                    <button class="control-button play-pause" id="videojs-play-btn" onclick="togglePlayCustom('videojs')">
+                                        ▶️
+                                    </button>
+
+                                    <div class="volume-container">
+                                        <button class="control-button" id="videojs-mute-btn" onclick="toggleMuteCustom('videojs')">
+                                            🔊
+                                        </button>
+                                        <input type="range" class="volume-slider" id="videojs-volume" min="0" max="1" step="0.1" value="1" onchange="setVolumeCustom('videojs', this.value)">
+                                    </div>
+
+                                    <select class="speed-selector" id="videojs-speed" onchange="setSpeedCustom('videojs', this.value)">
+                                        <option value="0.5">0.5x</option>
+                                        <option value="1" selected>1.0x</option>
+                                        <option value="1.5">1.5x</option>
+                                        <option value="2">2.0x</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -489,23 +550,33 @@
 
                             <!-- コントロールバー -->
                             <div class="custom-controls">
-                                <button class="control-button play-pause" id="hlsjs-play-btn" onclick="togglePlayCustom('hlsjs')">
-                                    ▶️
-                                </button>
-
-                                <div class="volume-container">
-                                    <button class="control-button" id="hlsjs-mute-btn" onclick="toggleMuteCustom('hlsjs')">
-                                        🔊
-                                    </button>
-                                    <input type="range" class="volume-slider" id="hlsjs-volume" min="0" max="1" step="0.1" value="1" onchange="setVolumeCustom('hlsjs', this.value)">
+                                <!-- シークバー -->
+                                <div class="seek-container">
+                                    <span class="time-display" id="hlsjs-current-time">0:00</span>
+                                    <input type="range" class="seek-bar" id="hlsjs-seek" min="0" max="100" value="0" oninput="seekToPosition('hlsjs', this.value)">
+                                    <span class="time-display" id="hlsjs-duration">0:00</span>
                                 </div>
 
-                                <select class="speed-selector" id="hlsjs-speed" onchange="setSpeedCustom('hlsjs', this.value)">
-                                    <option value="0.5">0.5x</option>
-                                    <option value="1" selected>1.0x</option>
-                                    <option value="1.5">1.5x</option>
-                                    <option value="2">2.0x</option>
-                                </select>
+                                <!-- コントロール行 -->
+                                <div class="controls-row">
+                                    <button class="control-button play-pause" id="hlsjs-play-btn" onclick="togglePlayCustom('hlsjs')">
+                                        ▶️
+                                    </button>
+
+                                    <div class="volume-container">
+                                        <button class="control-button" id="hlsjs-mute-btn" onclick="toggleMuteCustom('hlsjs')">
+                                            🔊
+                                        </button>
+                                        <input type="range" class="volume-slider" id="hlsjs-volume" min="0" max="1" step="0.1" value="1" onchange="setVolumeCustom('hlsjs', this.value)">
+                                    </div>
+
+                                    <select class="speed-selector" id="hlsjs-speed" onchange="setSpeedCustom('hlsjs', this.value)">
+                                        <option value="0.5">0.5x</option>
+                                        <option value="1" selected>1.0x</option>
+                                        <option value="1.5">1.5x</option>
+                                        <option value="2">2.0x</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -578,23 +649,32 @@
 
                             <!-- コントロールバー -->
                             <div class="custom-controls">
-                                <button class="control-button play-pause" id="shaka-play-btn" onclick="togglePlayCustom('shaka')">
-                                    ▶️
-                                </button>
-
-                                <div class="volume-container">
-                                    <button class="control-button" id="shaka-mute-btn" onclick="toggleMuteCustom('shaka')">
-                                        🔊
-                                    </button>
-                                    <input type="range" class="volume-slider" id="shaka-volume" min="0" max="1" step="0.1" value="1" onchange="setVolumeCustom('shaka', this.value)">
+                                <!-- シークバー -->
+                                <div class="seek-container">
+                                    <span class="time-display" id="shaka-current-time">0:00</span>
+                                    <input type="range" class="seek-bar" id="shaka-seek" min="0" max="100" value="0" oninput="seekToPosition('shaka', this.value)">
+                                    <span class="time-display" id="shaka-duration">0:00</span>
                                 </div>
 
-                                <select class="speed-selector" id="shaka-speed" onchange="setSpeedCustom('shaka', this.value)">
-                                    <option value="0.5">0.5x</option>
-                                    <option value="1" selected>1.0x</option>
-                                    <option value="1.5">1.5x</option>
-                                    <option value="2">2.0x</option>
-                                </select>
+                                <!-- コントロール行 -->
+                                <div class="controls-row">
+                                    <button class="control-button play-pause" id="shaka-play-btn" onclick="togglePlayCustom('shaka')">
+                                        ▶️
+                                    </button>
+
+                                    <div class="volume-container">
+                                        <button class="control-button" id="shaka-mute-btn" onclick="toggleMuteCustom('shaka')">
+                                            🔊
+                                        </button>
+                                        <input type="range" class="volume-slider" id="shaka-volume" min="0" max="1" step="0.1" value="1" onchange="setVolumeCustom('shaka', this.value)">
+                                    </div>
+
+                                    <select class="speed-selector" id="shaka-speed" onchange="setSpeedCustom('shaka', this.value)">
+                                        <option value="0.5">0.5x</option>
+                                        <option value="1" selected>1.0x</option>
+                                        <option value="2">2.0x</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>

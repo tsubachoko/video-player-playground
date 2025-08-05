@@ -173,6 +173,16 @@ export async function loadVideoJSCustom(url) {
             console.log('Video.js: 動画が終了しました');
             console.log('Video.js: Video ended');
         });
+
+        // 時間更新イベントリスナーを追加
+        customVideoJSPlayer.on('timeupdate', () => {
+            updateVideoJSSeekBar();
+        });
+
+        // メタデータ読み込み完了時
+        customVideoJSPlayer.on('loadedmetadata', () => {
+            updateVideoJSSeekBar();
+        });
     });
 }
 
@@ -256,4 +266,43 @@ export function loadSampleVideoJSCustom(type) {
     }
 
     loadVideoJSCustom(urlInput.value);
+}
+
+// Video.js カスタムシークバーの更新
+function updateVideoJSSeekBar() {
+    if (!customVideoJSPlayer) return;
+
+    const currentTime = customVideoJSPlayer.currentTime();
+    const duration = customVideoJSPlayer.duration();
+
+    if (duration > 0) {
+        const percentage = (currentTime / duration) * 100;
+        const seekBar = document.getElementById('videojs-seek');
+        if (seekBar) seekBar.value = percentage;
+
+        // 時間表示の更新
+        const currentTimeSpan = document.getElementById('videojs-current-time');
+        const durationSpan = document.getElementById('videojs-duration');
+        if (currentTimeSpan) currentTimeSpan.textContent = formatTime(currentTime);
+        if (durationSpan) durationSpan.textContent = formatTime(duration);
+    }
+}
+
+// Video.js カスタムシーク位置制御
+export function seekToPositionVideoJS(percentage) {
+    if (!customVideoJSPlayer) return;
+
+    const duration = customVideoJSPlayer.duration();
+    if (duration > 0) {
+        const newTime = (percentage / 100) * duration;
+        customVideoJSPlayer.currentTime(newTime);
+    }
+}
+
+// 時間フォーマット関数
+function formatTime(seconds) {
+    if (isNaN(seconds) || seconds < 0) return '0:00';
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
 }

@@ -1,12 +1,15 @@
 import { initVideoJS, loadVideoJS, sampleVideoJS, sampleVideoJSHLS, togglePiP,
          loadVideoJSCustom, togglePlayVideoJSCustom, toggleMuteVideoJSCustom,
-         setVolumeVideoJSCustom, setSpeedVideoJSCustom, seekVideoJSCustom, loadSampleVideoJSCustom } from './videojs/player.js';
+         setVolumeVideoJSCustom, setSpeedVideoJSCustom, seekVideoJSCustom, loadSampleVideoJSCustom,
+         seekToPositionVideoJS } from './videojs/player.js';
 import { initHLSJS, loadHLSJS, sampleHLSJS,
          loadHLSJSCustom, togglePlayHLSJSCustom, toggleMuteHLSJSCustom,
-         setVolumeHLSJSCustom, setSpeedHLSJSCustom, seekHLSJSCustom, loadSampleHLSJSCustom } from './hlsjs/player.js';
+         setVolumeHLSJSCustom, setSpeedHLSJSCustom, seekHLSJSCustom, loadSampleHLSJSCustom,
+         seekToPositionHLSJS } from './hlsjs/player.js';
 import { initShaka, loadShaka, sampleShaka, sampleShakaHLS,
          loadShakaCustom, togglePlayShakaCustom, toggleMuteShakaCustom,
-         setVolumeShakaCustom, setSpeedShakaCustom, seekShakaCustom, loadSampleShakaCustom } from './shaka/player.js';
+         setVolumeShakaCustom, setSpeedShakaCustom, seekShakaCustom, loadSampleShakaCustom,
+         seekToPositionShaka } from './shaka/player.js';
 
 // タブ切り替え機能
 window.switchTab = (tabName) => {
@@ -180,4 +183,23 @@ window.loadSampleCustom = function(playerType, type) {
     } else if (playerType === 'shaka') {
         loadSampleShakaCustom(type);
     }
+};
+
+// シークバーによる動画位置制御
+window.seekToPosition = function(playerType, percentage) {
+    if (playerType === 'videojs') {
+        seekToPositionVideoJS(percentage);
+    } else if (playerType === 'hlsjs') {
+        seekToPositionHLSJS(percentage);
+    } else if (playerType === 'shaka') {
+        seekToPositionShaka(percentage);
+    }
+};
+
+// 時間を mm:ss 形式でフォーマット
+window.formatTime = function(seconds) {
+    if (isNaN(seconds) || seconds < 0) return '0:00';
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
 };

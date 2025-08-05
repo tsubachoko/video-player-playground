@@ -102,6 +102,16 @@ export async function loadShakaCustom(url) {
         console.log('Shaka Player: 動画が終了しました');
         console.log('Shaka Player: Video ended');
     });
+
+    // 時間更新イベントリスナーを追加
+    videoElement.addEventListener('timeupdate', () => {
+        updateShakaSeekBar();
+    });
+
+    // メタデータ読み込み完了時
+    videoElement.addEventListener('loadedmetadata', () => {
+        updateShakaSeekBar();
+    });
 }
 
 // Shaka Player カスタム再生/一時停止の切り替え
@@ -185,4 +195,45 @@ export function loadSampleShakaCustom(type) {
     }
 
     loadShakaCustom(urlInput.value);
+}
+
+// Shaka Player カスタムシークバーの更新
+function updateShakaSeekBar() {
+    const videoElement = document.getElementById('shaka-custom-player');
+    if (!videoElement) return;
+
+    const currentTime = videoElement.currentTime;
+    const duration = videoElement.duration;
+
+    if (duration > 0) {
+        const percentage = (currentTime / duration) * 100;
+        const seekBar = document.getElementById('shaka-seek');
+        if (seekBar) seekBar.value = percentage;
+
+        // 時間表示の更新
+        const currentTimeSpan = document.getElementById('shaka-current-time');
+        const durationSpan = document.getElementById('shaka-duration');
+        if (currentTimeSpan) currentTimeSpan.textContent = formatTime(currentTime);
+        if (durationSpan) durationSpan.textContent = formatTime(duration);
+    }
+}
+
+// Shaka Player カスタムシーク位置制御
+export function seekToPositionShaka(percentage) {
+    const videoElement = document.getElementById('shaka-custom-player');
+    if (!videoElement) return;
+
+    const duration = videoElement.duration;
+    if (duration > 0) {
+        const newTime = (percentage / 100) * duration;
+        videoElement.currentTime = newTime;
+    }
+}
+
+// 時間フォーマット関数
+function formatTime(seconds) {
+    if (isNaN(seconds) || seconds < 0) return '0:00';
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
 }
