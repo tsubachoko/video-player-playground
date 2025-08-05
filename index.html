@@ -81,12 +81,12 @@
 
         .tab-button {
             flex: 1;
-            padding: 15px 20px;
+            padding: 12px 16px;
             background: #f8f9fa;
             border: none;
             cursor: pointer;
             font-weight: 500;
-            font-size: 16px;
+            font-size: 14px;
             color: #666;
             transition: all 0.3s ease;
             border-right: 1px solid #e0e0e0;
@@ -324,6 +324,9 @@
         </button>
         <button class="tab-button" onclick="switchTab('shaka')">
             🚀 Shaka Player
+        </button>
+        <button class="tab-button" onclick="switchTab('html5')">
+            🎞️ HTML5 Native
         </button>
     </div>
 
@@ -601,6 +604,63 @@
                         <button onclick="loadCustomPlayer('shaka')">ロード</button>
                         <button onclick="loadSampleCustom('shaka', 'dash')">サンプルDASH</button>
                         <button onclick="loadSampleCustom('shaka', 'hls')">サンプルHLS</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HTML5 Native Tab Content -->
+    <div id="html5-tab" class="tab-content">
+        <div class="container">
+            <div class="player-section">
+                <h2>HTML5 Native Video</h2>
+                <div class="info">
+                    <p><strong>HTML5 Native Video</strong> - ブラウザのネイティブHTML5 videoタグを使用。軽量でシンプル、MP4やHLS（Safari/iOSなど対応ブラウザ）を再生可能。</p>
+                </div>
+
+                <!-- HTML5 サブタブナビゲーション -->
+                <div class="sub-tab-navigation">
+                    <button class="sub-tab-button active" onclick="switchSubTab('html5', 'mp4')">
+                        🎬 MP4
+                    </button>
+                    <button class="sub-tab-button" onclick="switchSubTab('html5', 'hls')">
+                        📡 HLS
+                    </button>
+                </div>
+
+                <!-- HTML5 MP4 -->
+                <div id="html5-mp4" class="sub-tab-content active">
+                    <video controls width="800" height="450">
+                        <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+                        お使いのブラウザはビデオタグをサポートしていません。
+                    </video>
+                    <div class="info">
+                        <p><strong>対応形式:</strong> MP4 (H.264), WebM, Ogg</p>
+                        <p><strong>特徴:</strong> 軽量、高い互換性、基本的なコントロール</p>
+                        <p><strong>サンプル動画:</strong> Big Buck Bunny (MP4)</p>
+                    </div>
+                </div>
+
+                <!-- HTML5 HLS -->
+                <div id="html5-hls" class="sub-tab-content">
+                    <video controls width="800" height="450" crossorigin="anonymous">
+                        <!-- 一般的に動作するHLS URL -->
+                        <source src="https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8" type="application/x-mpegURL">
+                        <!-- Apple公式サンプル -->
+                        <source src="https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_fmp4/master.m3u8" type="application/x-mpegURL">
+                        お使いのブラウザはHLSをサポートしていません。
+                    </video>
+                    <div class="info">
+                        <p><strong>対応ブラウザ:</strong> Safari、iOS Safari、一部Android Chrome</p>
+                        <p><strong>特徴:</strong> ネイティブHLS対応、アダプティブストリーミング</p>
+                        <p><strong>注意:</strong> PC ChromeやFirefoxではネイティブHLS非対応</p>
+                        <p><strong>サンプル動画:</strong> Tears of Steel (HLS専用)</p>
+                        <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 4px; padding: 10px; margin-top: 10px;">
+                            <p><strong>💡 動作確認:</strong></p>
+                            <p>• 動画が再生された場合 → お使いのブラウザはHLS対応です ✅</p>
+                            <p>• 動画が再生されない場合 → お使いのブラウザはHLS非対応です ❌</p>
+                        </div>
                     </div>
                 </div>
             </div>
