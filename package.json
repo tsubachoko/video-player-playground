@@ -9,11 +9,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "video.js": "^8.6.1",
     "hls.js": "^1.4.12",
-    "shaka-player": "^4.7.5"
+    "shaka-player": "^4.7.5",
+    "video.js": "^8.6.1"
   },
   "devDependencies": {
+    "rollup-plugin-visualizer": "^6.0.3",
     "vite": "^5.0.8"
   }
 }

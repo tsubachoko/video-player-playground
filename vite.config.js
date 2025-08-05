@@ -1,4 +1,6 @@
 import { defineConfig } from 'vite'
+import { visualizer } from 'rollup-plugin-visualizer';
+
 
 export default defineConfig({
   server: {
@@ -7,5 +9,10 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: ['video.js', 'hls.js', 'shaka-player']
+  },
+  build: {
+    rollupOptions: {
+      plugins: [visualizer()]
+    }
   }
 })

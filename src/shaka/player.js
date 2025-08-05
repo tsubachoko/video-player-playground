@@ -1,4 +1,4 @@
-import shaka from 'shaka-player/dist/shaka-player.ui.js';
+import shaka from 'shaka-player';
 import { SAMPLE_URLS } from '../common/constants.js';
 
 let shakaPlayer;
@@ -154,6 +154,9 @@ export function setVolumeShakaCustom(volume) {
     const videoElement = document.getElementById('shaka-custom-player');
 
     if (!videoElement) return;
+
+    console.log(customShakaPlayer.getMediaElement());
+    // customShakaPlayer.ui.setVolume(parseFloat(volume));
 
     videoElement.volume = parseFloat(volume);
     videoElement.muted = false;
