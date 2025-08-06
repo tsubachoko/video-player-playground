@@ -5,11 +5,13 @@ import { initVideoJS, loadVideoJS, sampleVideoJS, sampleVideoJSHLS, togglePiP,
 import { initHLSJS, loadHLSJS, sampleHLSJS,
          loadHLSJSCustom, togglePlayHLSJSCustom, toggleMuteHLSJSCustom,
          setVolumeHLSJSCustom, setSpeedHLSJSCustom, seekHLSJSCustom, loadSampleHLSJSCustom,
-         seekToPositionHLSJS } from './hlsjs/player.js';
+         seekToPositionHLSJS, updateCMCDConfig as updateHLSJSCMCDConfig,
+         getCMCDConfig as getHLSJSCMCDConfig } from './hlsjs/player.js';
 import { initShaka, loadShaka, sampleShaka, sampleShakaHLS,
          loadShakaCustom, togglePlayShakaCustom, toggleMuteShakaCustom,
          setVolumeShakaCustom, setSpeedShakaCustom, seekShakaCustom, loadSampleShakaCustom,
-         seekToPositionShaka } from './shaka/player.js';
+         seekToPositionShaka, updateCMCDConfig as updateShakaCMCDConfig,
+         getCMCDConfig as getShakaCMCDConfig } from './shaka/player.js';
 
 // タブ切り替え機能
 window.switchTab = (tabName) => {
@@ -202,4 +204,51 @@ window.formatTime = function(seconds) {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = Math.floor(seconds % 60);
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+};
+
+// CMCD設定を更新する関数
+window.updateCMCDConfig = function(playerType, config) {
+    if (playerType === 'hlsjs') {
+        updateHLSJSCMCDConfig(config);
+    } else if (playerType === 'shaka') {
+        updateShakaCMCDConfig(config);
+    }
+};
+
+// CMCD設定を取得する関数
+window.getCMCDConfig = function(playerType) {
+    if (playerType === 'hlsjs') {
+        return getHLSJSCMCDConfig();
+    } else if (playerType === 'shaka') {
+        return getShakaCMCDConfig();
+    }
+    return null;
+};
+
+// CMCD設定の表示/非表示を切り替え
+window.toggleCMCD = function(playerType) {
+    const checkbox = document.getElementById(`${playerType}-cmcd-enabled`);
+    const options = document.getElementById(`${playerType}-cmcd-options`);
+    options.style.display = checkbox.checked ? 'block' : 'none';
+    
+    // 無効化された場合は設定を更新
+    if (!checkbox.checked) {
+        window.updateCMCDConfig(playerType, { enabled: false });
+    }
+};
+
+// CMCD設定を適用
+window.applyCMCDSettings = function(playerType) {
+    const enabled = document.getElementById(`${playerType}-cmcd-enabled`).checked;
+    const sessionId = document.getElementById(`${playerType}-cmcd-session`).value || null;
+    const contentId = document.getElementById(`${playerType}-cmcd-content`).value || null;
+    
+    const config = {
+        enabled: enabled,
+        sessionId: sessionId,
+        contentId: contentId
+    };
+    
+    window.updateCMCDConfig(playerType, config);
+    alert(`${playerType.toUpperCase()}のCMCD設定を適用しました`);
 };

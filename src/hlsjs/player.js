@@ -2,17 +2,39 @@ import Hls from 'hls.js';
 import { SAMPLE_URLS } from '../common/constants.js';
 
 let hlsjsInstance;
+let cmcdConfig = {
+    enabled: true,
+    sessionId: null,
+    contentId: null
+};
+
+// セッションID生成
+function generateSessionId() {
+    return 'hlsjs-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+}
 
 // HLS.js の初期化
 export function initHLSJS() {
     const video = document.getElementById('hlsjs-player');
 
     if (Hls.isSupported()) {
-        hlsjsInstance = new Hls({
+        const config = {
             debug: false,
             enableWorker: true,
             lowLatencyMode: true,
-        });
+        };
+
+        // CMCD有効時はネイティブのCMCD機能を使用
+        if (cmcdConfig.enabled) {
+            config.cmcd = {
+                sessionId: cmcdConfig.sessionId || generateSessionId(),
+                contentId: cmcdConfig.contentId || 'video-playground',
+                useHeaders: !true,
+            };
+        }
+
+        console.log('HLS.js config:', config);
+        hlsjsInstance = new Hls(config);
 
         hlsjsInstance.attachMedia(video);
 
@@ -84,7 +106,20 @@ export async function loadHLSJSCustom(url) {
     }
 
     if (Hls.isSupported()) {
-        customHLSJSPlayer = new Hls();
+        const config = {};
+
+        // CMCD有効時はネイティブのCMCD機能を使用
+        if (cmcdConfig.enabled) {
+            config.cmcd = {
+                sessionId: cmcdConfig.sessionId,
+                contentId: cmcdConfig.contentId || 'video-playground'
+            };
+            console.log('HLS.js CMCD Configuration:', config.cmcd);
+        }
+
+        console.log('HLS.js custom player config:', config);
+
+        customHLSJSPlayer = new Hls(config);
         customHLSJSPlayer.loadSource(url);
         customHLSJSPlayer.attachMedia(videoElement);
 
@@ -236,4 +271,25 @@ function formatTime(seconds) {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = Math.floor(seconds % 60);
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+}
+
+// CMCD設定を更新
+export function updateCMCDConfig(config) {
+    cmcdConfig = { ...cmcdConfig, ...config };
+    console.log('HLS.js CMCD Config Updated:', cmcdConfig);
+
+    // 既存のインスタンスを再初期化（CMCD設定を反映）
+    if (hlsjsInstance) {
+        const currentSrc = hlsjsInstance.url;
+        if (currentSrc) {
+            hlsjsInstance.destroy();
+            initHLSJS();
+            hlsjsInstance.loadSource(currentSrc);
+        }
+    }
+}
+
+// 現在のCMCD設定を取得
+export function getCMCDConfig() {
+    return { ...cmcdConfig };
 }

@@ -2,6 +2,18 @@ import shaka from 'shaka-player';
 import { SAMPLE_URLS } from '../common/constants.js';
 
 let shakaPlayer;
+let cmcdConfig = {
+    enabled: false,
+    sessionId: null,
+    contentId: null,
+    streamingFormat: 'dash',
+    streamType: 'v'
+};
+
+// セッションID生成
+function generateSessionId() {
+    return 'shaka-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+}
 
 // Shaka Player の初期化
 export async function initShaka() {
@@ -11,6 +23,9 @@ export async function initShaka() {
     if (shaka.Player.isBrowserSupported()) {
         const video = document.getElementById('shaka-player');
         shakaPlayer = new shaka.Player(video);
+
+        // CMCD設定を適用
+        configureCMCD(shakaPlayer);
 
         // エラーハンドリング
         shakaPlayer.addEventListener('error', (event) => {
@@ -22,10 +37,64 @@ export async function initShaka() {
             updateShakaInfo();
         });
 
+        shakaPlayer.getNetworkingEngine().registerRequestFilter((type, request) => {
+            // CMCDが送信されるタイプのリクエスト（セグメント、マニフェストなど）にのみ適用
+            const cmcdData = request.cmcd;
+            console.log('CMCD Data:', request);
+            return
+
+            if (!cmcdData) {
+                return;
+            }
+
+
+
+            // CMCDデータオブジェクトにカスタムキーを追加
+            cmcdData['cust-user'] = 'user-12345';
+
+            // 例: 'bl'（バッファ長）キーを送信しないようにする
+            delete cmcdData['bl'];
+
+            // 変更したCMCDデータをリクエストヘッダーに適用
+            if (player.getConfiguration().cmcd.useHeaders) {
+                request.headers['CMCD'] = shaka.util.CmcdManager.serialize(cmcdData);
+            }
+            // クエリパラメータの場合は、URLを変更するロジックが必要
+            // shaka.util.CmcdManager.serialize(cmcdData) は CMCDデータを文字列に変換するヘルパー関数
+        });
+
         console.log('Shaka Player initialized');
     } else {
         console.error('Browser not supported by Shaka Player');
     }
+}
+
+// CMCD設定を適用
+function configureCMCD(player) {
+    if (!cmcdConfig.enabled) {
+        player.configure({
+            cmcd: {
+                enabled: false
+            }
+        });
+        return;
+    }
+
+    const cmcdConfiguration = {
+        cmcd: {
+            enabled: true,
+            sessionId: cmcdConfig.sessionId || generateSessionId(),
+            contentId: cmcdConfig.contentId || 'video-playground',
+            useHeaders: false,
+            cmcdData: () => ({
+                streamingFormat: cmcdConfig.streamingFormat,
+                streamType: cmcdConfig.streamType
+            })
+        }
+    };
+
+    player.configure(cmcdConfiguration);
+    console.log('Shaka Player CMCD Configuration:', cmcdConfiguration);
 }
 
 // Shaka Player 情報の更新
@@ -95,6 +164,10 @@ export async function loadShakaCustom(url) {
     }
 
     customShakaPlayer = new shaka.Player(videoElement);
+
+    // CMCD設定を適用
+    configureCMCD(customShakaPlayer);
+
     await customShakaPlayer.load(url);
 
     // 動画終了時のイベントリスナーを追加
@@ -239,4 +312,23 @@ function formatTime(seconds) {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = Math.floor(seconds % 60);
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+}
+
+// CMCD設定を更新
+export function updateCMCDConfig(config) {
+    cmcdConfig = { ...cmcdConfig, ...config };
+    console.log('Shaka Player CMCD Config Updated:', cmcdConfig);
+
+    // 既存のプレイヤーにCMCD設定を適用
+    if (shakaPlayer) {
+        configureCMCD(shakaPlayer);
+    }
+    if (customShakaPlayer) {
+        configureCMCD(customShakaPlayer);
+    }
+}
+
+// 現在のCMCD設定を取得
+export function getCMCDConfig() {
+    return { ...cmcdConfig };
 }

@@ -360,6 +360,42 @@
             font-size: 20px;
             margin-bottom: 2px;
         }
+        
+        /* CMCD設定スタイル */
+        .cmcd-settings {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+        
+        .cmcd-settings h3 {
+            margin-top: 0;
+            color: #333;
+            font-size: 18px;
+        }
+        
+        .cmcd-settings label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: normal;
+        }
+        
+        .cmcd-settings input[type="checkbox"] {
+            margin-right: 8px;
+        }
+        
+        .cmcd-settings input[type="text"] {
+            width: 200px;
+            padding: 5px;
+            margin-left: 10px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+        
+        .cmcd-settings button {
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -524,6 +560,20 @@
                         <p>品質レベル: <span id="hlsjs-levels"></span></p>
                         <p>現在の品質: <span id="hlsjs-current-level"></span></p>
                     </div>
+                    
+                    <!-- CMCD設定 -->
+                    <div class="cmcd-settings">
+                        <h3>CMCD設定</h3>
+                        <label>
+                            <input type="checkbox" id="hlsjs-cmcd-enabled" onchange="toggleCMCD('hlsjs')">
+                            CMCDを有効にする
+                        </label>
+                        <div id="hlsjs-cmcd-options" style="display: none; margin-top: 10px;">
+                            <label>セッションID: <input type="text" id="hlsjs-cmcd-session" placeholder="自動生成"></label>
+                            <label>コンテンツID: <input type="text" id="hlsjs-cmcd-content" placeholder="video-playground"></label>
+                            <button onclick="applyCMCDSettings('hlsjs')">設定を適用</button>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- HLS.js カスタムUI -->
@@ -622,6 +672,20 @@
                     <div id="shaka-info" class="info" style="display: none;">
                         <p>利用可能な品質: <span id="shaka-variants"></span></p>
                         <p>現在の品質: <span id="shaka-current-variant"></span></p>
+                    </div>
+                    
+                    <!-- CMCD設定 -->
+                    <div class="cmcd-settings">
+                        <h3>CMCD設定</h3>
+                        <label>
+                            <input type="checkbox" id="shaka-cmcd-enabled" onchange="toggleCMCD('shaka')">
+                            CMCDを有効にする
+                        </label>
+                        <div id="shaka-cmcd-options" style="display: none; margin-top: 10px;">
+                            <label>セッションID: <input type="text" id="shaka-cmcd-session" placeholder="自動生成"></label>
+                            <label>コンテンツID: <input type="text" id="shaka-cmcd-content" placeholder="video-playground"></label>
+                            <button onclick="applyCMCDSettings('shaka')">設定を適用</button>
+                        </div>
                     </div>
                 </div>
 
