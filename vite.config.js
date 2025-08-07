@@ -12,7 +12,14 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      plugins: [visualizer()]
+      plugins: [visualizer()],
+      output: {
+        manualChunks: {
+          'vendor-videojs': ['video.js'],
+          'vendor-hlsjs': ['hls.js'],
+          'vendor-shaka': ['shaka-player']
+        }
+      }
     }
   }
 })
