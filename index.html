@@ -360,7 +360,7 @@
             font-size: 20px;
             margin-bottom: 2px;
         }
-        
+
         /* CMCD設定スタイル */
         .cmcd-settings {
             background: #f8f9fa;
@@ -368,23 +368,23 @@
             border-radius: 4px;
             margin-top: 20px;
         }
-        
+
         .cmcd-settings h3 {
             margin-top: 0;
             color: #333;
             font-size: 18px;
         }
-        
+
         .cmcd-settings label {
             display: block;
             margin-bottom: 10px;
             font-weight: normal;
         }
-        
+
         .cmcd-settings input[type="checkbox"] {
             margin-right: 8px;
         }
-        
+
         .cmcd-settings input[type="text"] {
             width: 200px;
             padding: 5px;
@@ -392,7 +392,7 @@
             border: 1px solid #ddd;
             border-radius: 3px;
         }
-        
+
         .cmcd-settings button {
             margin-top: 10px;
         }
@@ -403,22 +403,247 @@
 
     <!-- タブナビゲーション -->
     <div class="tab-navigation">
-        <button class="tab-button active" onclick="switchTab('videojs')">
-            📺 Video.js
+        <button class="tab-button active" onclick="switchTab('shaka')">
+            🚀 Shaka Player
         </button>
         <button class="tab-button" onclick="switchTab('hlsjs')">
             🎬 HLS.js
         </button>
-        <button class="tab-button" onclick="switchTab('shaka')">
-            🚀 Shaka Player
+        <button class="tab-button" onclick="switchTab('videojs')">
+            📺 Video.js
         </button>
         <button class="tab-button" onclick="switchTab('html5')">
             🎞️ HTML5 Native
         </button>
     </div>
 
+    <!-- Shaka Player Tab Content -->
+    <div id="shaka-tab" class="tab-content active">
+        <div class="container">
+            <div class="player-section">
+                <h2>Shaka Player</h2>
+                <div class="info">
+                    <p><strong>Shaka Player</strong> - Googleが開発したアダプティブストリーミングプレイヤー。DASH、HLS対応で高機能。</p>
+                </div>
+
+                <!-- Shaka Player サブタブナビゲーション -->
+                <div class="sub-tab-navigation">
+                    <button class="sub-tab-button active" onclick="switchSubTab('shaka', 'standard')">
+                        🎯 標準UI
+                    </button>
+                    <button class="sub-tab-button" onclick="switchSubTab('shaka', 'custom')">
+                        🎨 カスタムUI
+                    </button>
+                </div>
+
+                <!-- Shaka Player 標準UI -->
+                <div id="shaka-standard" class="sub-tab-content active">
+                    <video id="shaka-player" controls width="800" height="450"></video>
+                    <div class="controls">
+                        <input type="text" id="shaka-url" class="url-input" placeholder="DASH/HLS URLを入力してください">
+                        <button onclick="loadShaka()">ロード</button>
+                        <button onclick="sampleShaka()">サンプルDASH</button>
+                        <button onclick="sampleShakaHLS()">サンプルHLS</button>
+                    </div>
+                    <div id="shaka-info" class="info" style="display: none;">
+                        <p>利用可能な品質: <span id="shaka-variants"></span></p>
+                        <p>現在の品質: <span id="shaka-current-variant"></span></p>
+                    </div>
+
+                    <!-- CMCD設定 -->
+                    <div class="cmcd-settings">
+                        <h3>CMCD設定</h3>
+                        <label>
+                            <input type="checkbox" id="shaka-cmcd-enabled" onchange="toggleCMCD('shaka')">
+                            CMCDを有効にする
+                        </label>
+                        <div id="shaka-cmcd-options" style="display: none; margin-top: 10px;">
+                            <label>セッションID: <input type="text" id="shaka-cmcd-session" placeholder="自動生成"></label>
+                            <label>コンテンツID: <input type="text" id="shaka-cmcd-content" placeholder="video-playground"></label>
+                            <button onclick="applyCMCDSettings('shaka')">設定を適用</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shaka Player カスタムUI -->
+                <div id="shaka-custom" class="sub-tab-content">
+                    <div class="custom-player-container" id="shaka-custom-container">
+                        <video id="shaka-custom-player" class="custom-video"></video>
+
+                        <div class="custom-overlay" id="shaka-overlay">
+                            <!-- シークボタン（左側：10秒戻る） -->
+                            <div class="seek-buttons left">
+                                <button class="seek-button" onclick="seekCustomPlayer('shaka', -10)">
+                                    <span class="seek-icon">⏪</span>
+                                    <span>10s</span>
+                                </button>
+                            </div>
+
+                            <!-- シークボタン（右側：30秒進む） -->
+                            <div class="seek-buttons right">
+                                <button class="seek-button" onclick="seekCustomPlayer('shaka', 30)">
+                                    <span class="seek-icon">⏩</span>
+                                    <span>30s</span>
+                                </button>
+                            </div>
+
+                            <!-- コントロールバー -->
+                            <div class="custom-controls">
+                                <!-- シークバー -->
+                                <div class="seek-container">
+                                    <span class="time-display" id="shaka-current-time">0:00</span>
+                                    <input type="range" class="seek-bar" id="shaka-seek" min="0" max="100" value="0" oninput="seekToPosition('shaka', this.value)">
+                                    <span class="time-display" id="shaka-duration">0:00</span>
+                                </div>
+
+                                <!-- コントロール行 -->
+                                <div class="controls-row">
+                                    <button class="control-button play-pause" id="shaka-play-btn" onclick="togglePlayCustom('shaka')">
+                                        ▶️
+                                    </button>
+
+                                    <div class="volume-container">
+                                        <button class="control-button" id="shaka-mute-btn" onclick="toggleMuteCustom('shaka')">
+                                            🔊
+                                        </button>
+                                        <input type="range" class="volume-slider" id="shaka-volume" min="0" max="1" step="0.1" value="1" onchange="setVolumeCustom('shaka', this.value)">
+                                    </div>
+
+                                    <select class="speed-selector" id="shaka-speed" onchange="setSpeedCustom('shaka', this.value)">
+                                        <option value="0.5">0.5x</option>
+                                        <option value="1" selected>1.0x</option>
+                                        <option value="2">2.0x</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="controls">
+                        <input type="text" id="shaka-custom-url" class="url-input" placeholder="DASH/HLS URLを入力してください">
+                        <button onclick="loadCustomPlayer('shaka')">ロード</button>
+                        <button onclick="loadSampleCustom('shaka', 'dash')">サンプルDASH</button>
+                        <button onclick="loadSampleCustom('shaka', 'hls')">サンプルHLS</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HLS.js Tab Content -->
+    <div id="hlsjs-tab" class="tab-content">
+        <div class="container">
+            <div class="player-section">
+                <h2>HLS.js</h2>
+                <div class="info">
+                    <p><strong>HLS.js</strong> - HTTP Live Streaming (HLS) 対応のJavaScriptライブラリ。アダプティブストリーミングをサポート。</p>
+                </div>
+
+                <!-- HLS.js サブタブナビゲーション -->
+                <div class="sub-tab-navigation">
+                    <button class="sub-tab-button active" onclick="switchSubTab('hlsjs', 'standard')">
+                        🎯 標準UI
+                    </button>
+                    <button class="sub-tab-button" onclick="switchSubTab('hlsjs', 'custom')">
+                        🎨 カスタムUI
+                    </button>
+                </div>
+
+                <!-- HLS.js 標準UI -->
+                <div id="hlsjs-standard" class="sub-tab-content active">
+                    <video id="hlsjs-player" controls width="800" height="450"></video>
+                    <div class="controls">
+                        <input type="text" id="hlsjs-url" class="url-input" placeholder="HLS URLを入力してください (m3u8)">
+                        <button onclick="loadHLSJS()">ロード</button>
+                        <button onclick="sampleHLSJS()">サンプルHLS</button>
+                    </div>
+                    <div id="hlsjs-info" class="info" style="display: none;">
+                        <p>品質レベル: <span id="hlsjs-levels"></span></p>
+                        <p>現在の品質: <span id="hlsjs-current-level"></span></p>
+                    </div>
+
+                    <!-- CMCD設定 -->
+                    <div class="cmcd-settings">
+                        <h3>CMCD設定</h3>
+                        <label>
+                            <input type="checkbox" id="hlsjs-cmcd-enabled" onchange="toggleCMCD('hlsjs')">
+                            CMCDを有効にする
+                        </label>
+                        <div id="hlsjs-cmcd-options" style="display: none; margin-top: 10px;">
+                            <label>セッションID: <input type="text" id="hlsjs-cmcd-session" placeholder="自動生成"></label>
+                            <label>コンテンツID: <input type="text" id="hlsjs-cmcd-content" placeholder="video-playground"></label>
+                            <button onclick="applyCMCDSettings('hlsjs')">設定を適用</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- HLS.js カスタムUI -->
+                <div id="hlsjs-custom" class="sub-tab-content">
+                    <div class="custom-player-container" id="hlsjs-custom-container">
+                        <video id="hlsjs-custom-player" class="custom-video"></video>
+
+                        <div class="custom-overlay" id="hlsjs-overlay">
+                            <!-- シークボタン（左側：10秒戻る） -->
+                            <div class="seek-buttons left">
+                                <button class="seek-button" onclick="seekCustomPlayer('hlsjs', -10)">
+                                    <span class="seek-icon">⏪</span>
+                                    <span>10s</span>
+                                </button>
+                            </div>
+
+                            <!-- シークボタン（右側：30秒進む） -->
+                            <div class="seek-buttons right">
+                                <button class="seek-button" onclick="seekCustomPlayer('hlsjs', 30)">
+                                    <span class="seek-icon">⏩</span>
+                                    <span>30s</span>
+                                </button>
+                            </div>
+
+                            <!-- コントロールバー -->
+                            <div class="custom-controls">
+                                <!-- シークバー -->
+                                <div class="seek-container">
+                                    <span class="time-display" id="hlsjs-current-time">0:00</span>
+                                    <input type="range" class="seek-bar" id="hlsjs-seek" min="0" max="100" value="0" oninput="seekToPosition('hlsjs', this.value)">
+                                    <span class="time-display" id="hlsjs-duration">0:00</span>
+                                </div>
+
+                                <!-- コントロール行 -->
+                                <div class="controls-row">
+                                    <button class="control-button play-pause" id="hlsjs-play-btn" onclick="togglePlayCustom('hlsjs')">
+                                        ▶️
+                                    </button>
+
+                                    <div class="volume-container">
+                                        <button class="control-button" id="hlsjs-mute-btn" onclick="toggleMuteCustom('hlsjs')">
+                                            🔊
+                                        </button>
+                                        <input type="range" class="volume-slider" id="hlsjs-volume" min="0" max="1" step="0.1" value="1" onchange="setVolumeCustom('hlsjs', this.value)">
+                                    </div>
+
+                                    <select class="speed-selector" id="hlsjs-speed" onchange="setSpeedCustom('hlsjs', this.value)">
+                                        <option value="0.5">0.5x</option>
+                                        <option value="1" selected>1.0x</option>
+                                        <option value="1.5">1.5x</option>
+                                        <option value="2">2.0x</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="controls">
+                        <input type="text" id="hlsjs-custom-url" class="url-input" placeholder="HLS URLを入力してください (m3u8)">
+                        <button onclick="loadCustomPlayer('hlsjs')">ロード</button>
+                        <button onclick="loadSampleCustom('hlsjs', 'hls')">サンプルHLS</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Video.js Tab Content -->
-    <div id="videojs-tab" class="tab-content active">
+    <div id="videojs-tab" class="tab-content">
         <div class="container">
             <div class="player-section">
                 <h2>Video.js</h2>
@@ -523,231 +748,6 @@
                         <button onclick="loadCustomPlayer('videojs')">ロード</button>
                         <button onclick="loadSampleCustom('videojs', 'mp4')">サンプル動画</button>
                         <button onclick="loadSampleCustom('videojs', 'hls')">サンプルHLS</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- HLS.js Tab Content -->
-    <div id="hlsjs-tab" class="tab-content">
-        <div class="container">
-            <div class="player-section">
-                <h2>HLS.js</h2>
-                <div class="info">
-                    <p><strong>HLS.js</strong> - HTTP Live Streaming (HLS) 対応のJavaScriptライブラリ。アダプティブストリーミングをサポート。</p>
-                </div>
-
-                <!-- HLS.js サブタブナビゲーション -->
-                <div class="sub-tab-navigation">
-                    <button class="sub-tab-button active" onclick="switchSubTab('hlsjs', 'standard')">
-                        🎯 標準UI
-                    </button>
-                    <button class="sub-tab-button" onclick="switchSubTab('hlsjs', 'custom')">
-                        🎨 カスタムUI
-                    </button>
-                </div>
-
-                <!-- HLS.js 標準UI -->
-                <div id="hlsjs-standard" class="sub-tab-content active">
-                    <video id="hlsjs-player" controls width="800" height="450"></video>
-                    <div class="controls">
-                        <input type="text" id="hlsjs-url" class="url-input" placeholder="HLS URLを入力してください (m3u8)">
-                        <button onclick="loadHLSJS()">ロード</button>
-                        <button onclick="sampleHLSJS()">サンプルHLS</button>
-                    </div>
-                    <div id="hlsjs-info" class="info" style="display: none;">
-                        <p>品質レベル: <span id="hlsjs-levels"></span></p>
-                        <p>現在の品質: <span id="hlsjs-current-level"></span></p>
-                    </div>
-                    
-                    <!-- CMCD設定 -->
-                    <div class="cmcd-settings">
-                        <h3>CMCD設定</h3>
-                        <label>
-                            <input type="checkbox" id="hlsjs-cmcd-enabled" onchange="toggleCMCD('hlsjs')">
-                            CMCDを有効にする
-                        </label>
-                        <div id="hlsjs-cmcd-options" style="display: none; margin-top: 10px;">
-                            <label>セッションID: <input type="text" id="hlsjs-cmcd-session" placeholder="自動生成"></label>
-                            <label>コンテンツID: <input type="text" id="hlsjs-cmcd-content" placeholder="video-playground"></label>
-                            <button onclick="applyCMCDSettings('hlsjs')">設定を適用</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- HLS.js カスタムUI -->
-                <div id="hlsjs-custom" class="sub-tab-content">
-                    <div class="custom-player-container" id="hlsjs-custom-container">
-                        <video id="hlsjs-custom-player" class="custom-video"></video>
-
-                        <div class="custom-overlay" id="hlsjs-overlay">
-                            <!-- シークボタン（左側：10秒戻る） -->
-                            <div class="seek-buttons left">
-                                <button class="seek-button" onclick="seekCustomPlayer('hlsjs', -10)">
-                                    <span class="seek-icon">⏪</span>
-                                    <span>10s</span>
-                                </button>
-                            </div>
-
-                            <!-- シークボタン（右側：30秒進む） -->
-                            <div class="seek-buttons right">
-                                <button class="seek-button" onclick="seekCustomPlayer('hlsjs', 30)">
-                                    <span class="seek-icon">⏩</span>
-                                    <span>30s</span>
-                                </button>
-                            </div>
-
-                            <!-- コントロールバー -->
-                            <div class="custom-controls">
-                                <!-- シークバー -->
-                                <div class="seek-container">
-                                    <span class="time-display" id="hlsjs-current-time">0:00</span>
-                                    <input type="range" class="seek-bar" id="hlsjs-seek" min="0" max="100" value="0" oninput="seekToPosition('hlsjs', this.value)">
-                                    <span class="time-display" id="hlsjs-duration">0:00</span>
-                                </div>
-
-                                <!-- コントロール行 -->
-                                <div class="controls-row">
-                                    <button class="control-button play-pause" id="hlsjs-play-btn" onclick="togglePlayCustom('hlsjs')">
-                                        ▶️
-                                    </button>
-
-                                    <div class="volume-container">
-                                        <button class="control-button" id="hlsjs-mute-btn" onclick="toggleMuteCustom('hlsjs')">
-                                            🔊
-                                        </button>
-                                        <input type="range" class="volume-slider" id="hlsjs-volume" min="0" max="1" step="0.1" value="1" onchange="setVolumeCustom('hlsjs', this.value)">
-                                    </div>
-
-                                    <select class="speed-selector" id="hlsjs-speed" onchange="setSpeedCustom('hlsjs', this.value)">
-                                        <option value="0.5">0.5x</option>
-                                        <option value="1" selected>1.0x</option>
-                                        <option value="1.5">1.5x</option>
-                                        <option value="2">2.0x</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="controls">
-                        <input type="text" id="hlsjs-custom-url" class="url-input" placeholder="HLS URLを入力してください (m3u8)">
-                        <button onclick="loadCustomPlayer('hlsjs')">ロード</button>
-                        <button onclick="loadSampleCustom('hlsjs', 'hls')">サンプルHLS</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Shaka Player Tab Content -->
-    <div id="shaka-tab" class="tab-content">
-        <div class="container">
-            <div class="player-section">
-                <h2>Shaka Player</h2>
-                <div class="info">
-                    <p><strong>Shaka Player</strong> - Googleが開発したアダプティブストリーミングプレイヤー。DASH、HLS対応で高機能。</p>
-                </div>
-
-                <!-- Shaka Player サブタブナビゲーション -->
-                <div class="sub-tab-navigation">
-                    <button class="sub-tab-button active" onclick="switchSubTab('shaka', 'standard')">
-                        🎯 標準UI
-                    </button>
-                    <button class="sub-tab-button" onclick="switchSubTab('shaka', 'custom')">
-                        🎨 カスタムUI
-                    </button>
-                </div>
-
-                <!-- Shaka Player 標準UI -->
-                <div id="shaka-standard" class="sub-tab-content active">
-                    <video id="shaka-player" controls width="800" height="450"></video>
-                    <div class="controls">
-                        <input type="text" id="shaka-url" class="url-input" placeholder="DASH/HLS URLを入力してください">
-                        <button onclick="loadShaka()">ロード</button>
-                        <button onclick="sampleShaka()">サンプルDASH</button>
-                        <button onclick="sampleShakaHLS()">サンプルHLS</button>
-                    </div>
-                    <div id="shaka-info" class="info" style="display: none;">
-                        <p>利用可能な品質: <span id="shaka-variants"></span></p>
-                        <p>現在の品質: <span id="shaka-current-variant"></span></p>
-                    </div>
-                    
-                    <!-- CMCD設定 -->
-                    <div class="cmcd-settings">
-                        <h3>CMCD設定</h3>
-                        <label>
-                            <input type="checkbox" id="shaka-cmcd-enabled" onchange="toggleCMCD('shaka')">
-                            CMCDを有効にする
-                        </label>
-                        <div id="shaka-cmcd-options" style="display: none; margin-top: 10px;">
-                            <label>セッションID: <input type="text" id="shaka-cmcd-session" placeholder="自動生成"></label>
-                            <label>コンテンツID: <input type="text" id="shaka-cmcd-content" placeholder="video-playground"></label>
-                            <button onclick="applyCMCDSettings('shaka')">設定を適用</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Shaka Player カスタムUI -->
-                <div id="shaka-custom" class="sub-tab-content">
-                    <div class="custom-player-container" id="shaka-custom-container">
-                        <video id="shaka-custom-player" class="custom-video"></video>
-
-                        <div class="custom-overlay" id="shaka-overlay">
-                            <!-- シークボタン（左側：10秒戻る） -->
-                            <div class="seek-buttons left">
-                                <button class="seek-button" onclick="seekCustomPlayer('shaka', -10)">
-                                    <span class="seek-icon">⏪</span>
-                                    <span>10s</span>
-                                </button>
-                            </div>
-
-                            <!-- シークボタン（右側：30秒進む） -->
-                            <div class="seek-buttons right">
-                                <button class="seek-button" onclick="seekCustomPlayer('shaka', 30)">
-                                    <span class="seek-icon">⏩</span>
-                                    <span>30s</span>
-                                </button>
-                            </div>
-
-                            <!-- コントロールバー -->
-                            <div class="custom-controls">
-                                <!-- シークバー -->
-                                <div class="seek-container">
-                                    <span class="time-display" id="shaka-current-time">0:00</span>
-                                    <input type="range" class="seek-bar" id="shaka-seek" min="0" max="100" value="0" oninput="seekToPosition('shaka', this.value)">
-                                    <span class="time-display" id="shaka-duration">0:00</span>
-                                </div>
-
-                                <!-- コントロール行 -->
-                                <div class="controls-row">
-                                    <button class="control-button play-pause" id="shaka-play-btn" onclick="togglePlayCustom('shaka')">
-                                        ▶️
-                                    </button>
-
-                                    <div class="volume-container">
-                                        <button class="control-button" id="shaka-mute-btn" onclick="toggleMuteCustom('shaka')">
-                                            🔊
-                                        </button>
-                                        <input type="range" class="volume-slider" id="shaka-volume" min="0" max="1" step="0.1" value="1" onchange="setVolumeCustom('shaka', this.value)">
-                                    </div>
-
-                                    <select class="speed-selector" id="shaka-speed" onchange="setSpeedCustom('shaka', this.value)">
-                                        <option value="0.5">0.5x</option>
-                                        <option value="1" selected>1.0x</option>
-                                        <option value="2">2.0x</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="controls">
-                        <input type="text" id="shaka-custom-url" class="url-input" placeholder="DASH/HLS URLを入力してください">
-                        <button onclick="loadCustomPlayer('shaka')">ロード</button>
-                        <button onclick="loadSampleCustom('shaka', 'dash')">サンプルDASH</button>
-                        <button onclick="loadSampleCustom('shaka', 'hls')">サンプルHLS</button>
                     </div>
                 </div>
             </div>
