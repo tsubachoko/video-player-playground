@@ -16,6 +16,7 @@ function generateSessionId() {
 // HLS.js の初期化
 export function initHLSJS() {
     const video = document.getElementById('hlsjs-player');
+    const urlInput = document.getElementById('hlsjs-url');
 
     if (Hls.isSupported()) {
         const config = {
@@ -41,6 +42,13 @@ export function initHLSJS() {
         hlsjsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
             console.log('HLS manifest parsed');
             updateHLSInfo();
+            // ミュート状態で自動再生（ブラウザの自動再生ポリシーに対応）
+            video.muted = true;
+            video.play().then(() => {
+                console.log('HLS.js: HLSサンプルをミュート状態で自動再生開始');
+            }).catch(error => {
+                console.error('HLS.js: 自動再生エラー:', error);
+            });
         });
 
         hlsjsInstance.on(Hls.Events.LEVEL_SWITCHED, () => {
@@ -50,8 +58,27 @@ export function initHLSJS() {
         hlsjsInstance.on(Hls.Events.ERROR, (event, data) => {
             console.error('HLS.js error:', data);
         });
+
+        // デフォルトでHLSサンプルURLを設定して自動読み込み
+        if (urlInput) {
+            urlInput.value = SAMPLE_URLS.hls;
+            hlsjsInstance.loadSource(SAMPLE_URLS.hls);
+            hlsjsInstance.startLoad();
+            console.log('HLS.js: HLSサンプルを自動読み込み');
+        }
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
         console.log('HLS native support');
+        // ネイティブHLSサポートの場合も自動読み込み・再生
+        if (urlInput) {
+            urlInput.value = SAMPLE_URLS.hls;
+            video.src = SAMPLE_URLS.hls;
+            video.muted = true;
+            video.play().then(() => {
+                console.log('HLS.js (native): HLSサンプルをミュート状態で自動再生開始');
+            }).catch(error => {
+                console.error('HLS.js (native): 自動再生エラー:', error);
+            });
+        }
     } else {
         console.error('HLS not supported');
     }
