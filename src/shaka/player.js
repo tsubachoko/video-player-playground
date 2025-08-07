@@ -37,6 +37,23 @@ export async function initShaka() {
             updateShakaInfo();
         });
 
+        // デフォルトでHLSサンプルURLを設定して自動再生
+        const urlInput = document.getElementById('shaka-url');
+        if (urlInput) {
+            urlInput.value = SAMPLE_URLS.hls;
+            // 自動的にHLSサンプルを読み込んで再生
+            try {
+                await shakaPlayer.load(SAMPLE_URLS.hls);
+                // ミュート状態で自動再生（ブラウザの自動再生ポリシーに対応）
+                video.muted = true;
+                await video.play();
+                console.log('Shaka Player: HLSサンプルをミュート状態で自動再生開始');
+                updateShakaInfo();
+            } catch (error) {
+                console.error('Shaka Player: 自動再生エラー:', error);
+            }
+        }
+
         shakaPlayer.getNetworkingEngine().registerRequestFilter((type, request) => {
             // CMCDが送信されるタイプのリクエスト（セグメント、マニフェストなど）にのみ適用
             const cmcdData = request.cmcd;
