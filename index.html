@@ -811,6 +811,11 @@
         </div>
     </div>
 
+    <!-- Modern browsers -->
     <script type="module" src="/src/main.js"></script>
+    <!-- Legacy browsers fallback -->
+    <script nomodule>
+        console.log('Legacy browser detected, loading polyfills...');
+    </script>
 </body>
 </html>

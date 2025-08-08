@@ -6,21 +6,36 @@ import legacy from '@vitejs/plugin-legacy'
 export default defineConfig({
   plugins: [
     legacy({
-      targets: ['chrome >= 50'],
+      targets: ['chrome >= 50', 'ie >= 11'],
       additionalLegacyPolyfills: [
         'regenerator-runtime/runtime',
-        'core-js/modules/es.promise.js',
-        'core-js/modules/es.array.from.js',
-        'core-js/modules/es.array.includes.js',
-        'core-js/modules/es.object.assign.js',
-        'core-js/modules/es.object.entries.js',
-        'core-js/modules/es.object.values.js',
-        'core-js/modules/es.string.includes.js',
-        'core-js/modules/es.string.pad-start.js',
-        'core-js/modules/es.string.pad-end.js'
+        'core-js/stable'
       ],
-      polyfills: true,
-      modernPolyfills: false
+      polyfills: [
+        'es.promise',
+        'es.array.from',
+        'es.array.includes',
+        'es.array.find',
+        'es.array.find-index',
+        'es.array.iterator',
+        'es.object.assign',
+        'es.object.entries',
+        'es.object.values',
+        'es.object.keys',
+        'es.string.includes',
+        'es.string.pad-start',
+        'es.string.pad-end',
+        'es.string.starts-with',
+        'es.string.ends-with',
+        'es.symbol',
+        'es.symbol.iterator',
+        'es.map',
+        'es.set',
+        'es.weak-map',
+        'es.weak-set'
+      ],
+      modernPolyfills: false,
+      renderLegacyChunks: true
     })
   ],
   server: {
@@ -31,7 +46,8 @@ export default defineConfig({
     include: ['video.js', 'hls.js', 'shaka-player']
   },
   build: {
-    target: 'es2015',
+    target: ['chrome50', 'safari11'],
+    cssTarget: 'chrome50',
     rollupOptions: {
       plugins: [visualizer()],
       output: {
@@ -41,6 +57,11 @@ export default defineConfig({
           'vendor-shaka': ['shaka-player']
         }
       }
+    },
+    minify: 'terser',
+    terserOptions: {
+      ecma: 5,
+      safari10: true
     }
   }
 })

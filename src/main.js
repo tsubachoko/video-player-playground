@@ -13,6 +13,8 @@ import { initShaka, loadShaka, sampleShaka, sampleShakaHLS,
          seekToPositionShaka, updateCMCDConfig as updateShakaCMCDConfig,
          getCMCDConfig as getShakaCMCDConfig } from './shaka/player.js';
 
+console.log('Main script loaded');
+
 // タブ切り替え機能
 window.switchTab = (tabName) => {
     // すべてのタブボタンからactiveクラスを削除
@@ -230,7 +232,7 @@ window.toggleCMCD = function(playerType) {
     const checkbox = document.getElementById(`${playerType}-cmcd-enabled`);
     const options = document.getElementById(`${playerType}-cmcd-options`);
     options.style.display = checkbox.checked ? 'block' : 'none';
-    
+
     // 無効化された場合は設定を更新
     if (!checkbox.checked) {
         window.updateCMCDConfig(playerType, { enabled: false });
@@ -242,13 +244,13 @@ window.applyCMCDSettings = function(playerType) {
     const enabled = document.getElementById(`${playerType}-cmcd-enabled`).checked;
     const sessionId = document.getElementById(`${playerType}-cmcd-session`).value || null;
     const contentId = document.getElementById(`${playerType}-cmcd-content`).value || null;
-    
+
     const config = {
         enabled: enabled,
         sessionId: sessionId,
         contentId: contentId
     };
-    
+
     window.updateCMCDConfig(playerType, config);
     alert(`${playerType.toUpperCase()}のCMCD設定を適用しました`);
 };
